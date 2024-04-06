@@ -1,0 +1,41 @@
+version: "3"
+
+services:
+  postgres:
+    image: postgres:latest
+    volumes:
+      - ./scripts/migrations:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: brick
+    ports:
+      - "5432:5432"
+
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    restart: on-failure
+    depends_on:
+      - postgres
+    environment:
+      APP_NAME: brick
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: b4s4r4
+      DATABASE_NAME: brick
+      REST_PORT: 8080
+      REST_BODY_SIZE: 8
+      REST_DEBUG: "true"
+      REST_TIMEOUT_READ: 20
+      REST_TIMEOUT_WRITE: 20
+      LOGGING_LEVEL: 6
+      LOGGING_FORMAT: text
+      COMMON_SECRET: brick-144
+      COMMON_EXPIRY_TIME: 1
+      API_KEY_SECRET: brick-77
+      API_KEY_EXPIRY_TIME: 10
